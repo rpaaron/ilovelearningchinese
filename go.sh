@@ -21,5 +21,10 @@ while read EPISODE_URL; do
         wget -P episodes/$EPISODE_NUMBER $EPISODE_URL
         mv episodes/$EPISODE_NUMBER/$EPISODE_NUMBER episodes/$EPISODE_NUMBER/index.html
     fi
+    if [ ! -f episodes/$EPISODE_NUMBER/audio.txt ]; then
+        grep -ohP https\?://\[\\w./\]+.mp3 episodes/$EPISODE_NUMBER/index.html | sort | uniq > episodes/$EPISODE_NUMBER/audio.txt
+        wget -P episodes/$EPISODE_NUMBER -i episodes/$EPISODE_NUMBER/audio.txt
+    fi
+
 done < episodes.txt
           

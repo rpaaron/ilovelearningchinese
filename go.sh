@@ -7,5 +7,19 @@ else
 fi
 
 #xmllint --xpath "//channel/item/*[self::link or self::title]" podcast.rss | xargs -L2 echo
-xmllint --xpath "//channel/item/link/text()" podcast.rss > episodes.txt
+if [ ! -f episodes.txt ]; then
+    xmllint --xpath "//channel/item/link/text()" podcast.rss > episodes.txt
+fi
+
+while read EPISODE_URL; do
+    echo Processing $EPISODE_URL
+    EPISODE_NUMBER=`echo $EPISODE_URL | cut -d "/" -f 5`
+    echo Episode number $EPISODE_NUMBER
+    if [ ! -d episodes/$EPISODE_NUMBER ]; then
+        echo I should create the folder episodes/$EPISODE_NUMBER
+        mkdir episodes/$EPISODE_NUMBER
+        wget -P episodes/$EPISODE_NUMBER $EPISODE_URL
+        mv episodes/$EPISODE_NUMBER/$EPISODE_NUMBER episodes/$EPISODE_NUMBER/index.html
+    fi
+done < episodes.txt
           
